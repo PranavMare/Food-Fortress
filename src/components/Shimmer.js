@@ -1,39 +1,39 @@
 // Shimmer.jsx
-import React from "react";
 
-const Shimmer = () => (
-  <div className="shimmer-container">
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-    <div className="shimmer-card"></div>
-  </div>
-);
+export default function Shimmer({ count = 50 }) {
+  return (
+    <>
+      <style>{`
+        @keyframes shimmer-sweep { 100% { transform: translateX(100%); } }
 
-export default Shimmer;
+        .shimmer-card {
+          width: 250px;
+          height: 200px;
+          border-radius: 12px;      /* ~ rounded-xl */
+          background-color: #e5e7eb;/* ~ slate-200 */
+          position: relative;
+          overflow: hidden;
+        }
+        .shimmer-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          transform: translateX(-100%);
+          background-image: linear-gradient(
+            90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.55) 50%,
+            rgba(255,255,255,0) 100%
+          );
+          animation: shimmer-sweep 1.25s infinite;
+        }
+      `}</style>
+
+      <div className="grid grid-cols-7 sm:grid-cols-3 lg:grid-cols-7 gap-2 py-5 px-10">
+        {Array.from({ length: count }).map((_, i) => (
+          <div key={i} className="shimmer-card" />
+        ))}
+      </div>
+    </>
+  );
+}
