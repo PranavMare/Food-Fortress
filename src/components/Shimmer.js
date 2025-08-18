@@ -29,7 +29,7 @@ export default function Shimmer({ count = 50 }) {
         }
       `}</style>
 
-      <div className="grid grid-cols-7 sm:grid-cols-3 lg:grid-cols-7 gap-2 py-5 px-10">
+      <div className="p-4 py-15 m-4 mx-auto max-w-screen-5xl flex flex-wrap justify-center gap-8">
         {Array.from({ length: count }).map((_, i) => (
           <div key={i} className="shimmer-card" />
         ))}

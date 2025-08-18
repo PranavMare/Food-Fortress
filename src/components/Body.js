@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
 
 const Body = () => {
-  //State Variable = Super powerful variable
-
   const [resObj, setResObj] = useState([]);
   const [filteredRestuarants, setFilteredRestuarants] = useState(resObj);
   const [toggleTopResturants, setToggleTopResturants] = useState("Top Rated Restaurants");
@@ -32,14 +30,14 @@ const Body = () => {
   if (onlineStatus === false) return <h1>Looks like you are offline please check your internet connection!!</h1>;
 
   return resObj.length === 0 ? (
-    <Shimmer />
+    <Shimmer  />
   ) : (
-    <div className="body">
-      <div className="flex">
+    <div className="body ">
+      <div className="flex justify-center">
         <div className="m-1 p-2">
           <input
             type="text"
-            className="border border-solid border-black rounded-2xl"
+            className="border border-solid border-black rounded-l "
             value={searchText}
             onChange={(e) => {
               const query = e.target.value;
@@ -49,7 +47,7 @@ const Body = () => {
             }}
           />
           <button
-            className="px-4 py-2 m-2 bg-orange-400 rounded-2xl cursor-pointer"
+            className="px-4 py-2 m-2 bg-primary rounded-2xl cursor-pointer text-white"
             onClick={() => {
               const filtered = resObj.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()));
               setFilteredRestuarants(filtered);
@@ -59,7 +57,7 @@ const Body = () => {
           </button>
         </div>
         <button
-          className="px-4 py-2 m-4 bg-orange-400 rounded-2xl cursor-pointer"
+          className="px-4 py-2 m-4 bg-primary rounded-2xl cursor-pointer text-white"
           onClick={() => {
             if (toggleTopResturants === "Top Rated Restaurants") {
               const filtered = resObj.filter((res) => res.info.avgRatingString > 4.5);
@@ -74,9 +72,9 @@ const Body = () => {
           {toggleTopResturants}
         </button>
       </div>
-      <div className=" flex flex-wrap">
+      <div className="mx-auto max-w-screen-5xl flex flex-wrap justify-center gap-8">
         {filteredRestuarants.map((restaurant) => (
-          <Link key={restaurant.info.id} to={"/restaurant/" + restaurant.info.id}>
+          <Link key={restaurant.info.id} to={"/restaurant/" + restaurant.info.id} className="block">
             <RestaurantCard resData={restaurant} />
           </Link>
         ))}
