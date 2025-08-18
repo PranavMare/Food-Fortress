@@ -1,86 +1,57 @@
-import RestaurantCard from "./RestaurantCard";
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Shimmer from "./Shimmer";
-import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
+import useRestaurants from "../utils/useRestaurants.js";
+import useInfiniteIntersection from "../utils/useInfiniteIntersection.js";
+// ← from utils
+import SearchControls from "./SearchControls";
+import RestaurantGrid from "./RestaurantGrid";
 
-const Body = () => {
-  const [resObj, setResObj] = useState([]);
-  const [filteredRestuarants, setFilteredRestuarants] = useState(resObj);
-  const [toggleTopResturants, setToggleTopResturants] = useState("Top Rated Restaurants");
+// Set your city coords here
+const LAT = 18.5220938;
+const LNG = 73.8412187;
+
+export default function Body() {
+  const onlineStatus = useOnlineStatus();
+  const { restaurants, hasMore, loadingMore, loadMore } = useRestaurants({ lat: LAT, lng: LNG });
 
   const [searchText, setSearchText] = useState("");
+  const [topOnly, setTopOnly] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const filtered = useMemo(() => {
+    let list = restaurants;
+    if (topOnly) list = list.filter((r) => Number(r?.info?.avgRatingString) > 4.5);
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      list = list.filter((r) => r?.info?.name?.toLowerCase().includes(q));
+    }
+    return list;
+  }, [restaurants, searchText, topOnly]);
 
-  const fetchData = async () => {
-    const data = await fetch(
-      "https://corsproxy.io/?https://www.swiggy.com/dapi/restaurants/list/v5?lat=18.5220938&lng=73.8412187&page_type=DESKTOP_WEB_LISTING"
-    );
-    const json = await data.json();
-    setResObj(json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
-    setFilteredRestuarants(json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
-  };
+  const sentinelRef = useInfiniteIntersection(loadMore, {
+    root: null,
+    rootMargin: "0px 0px 300px 0px",
+    threshold: 0,
+    enabled: hasMore && !loadingMore,
+  });
 
-  const onlineStatus = useOnlineStatus();
-  console.log(onlineStatus);
+  if (onlineStatus === false) {
+    return <h1>Looks like you are offline please check your internet connection!!</h1>;
+  }
 
-  if (onlineStatus === false) return <h1>Looks like you are offline please check your internet connection!!</h1>;
+  if (restaurants.length === 0) {
+    return <Shimmer />;
+  }
 
-  return resObj.length === 0 ? (
-    <Shimmer  />
-  ) : (
-    <div className="body ">
-      <div className="flex justify-center">
-        <div className="m-1 p-2">
-          <input
-            type="text"
-            className="border border-solid border-black rounded-l "
-            value={searchText}
-            onChange={(e) => {
-              const query = e.target.value;
-              setSearchText(query);
-              const filtered = resObj.filter((res) => res.info.name.toLowerCase().includes(query.toLowerCase()));
-              setFilteredRestuarants(filtered);
-            }}
-          />
-          <button
-            className="px-4 py-2 m-2 bg-primary rounded-2xl cursor-pointer text-white"
-            onClick={() => {
-              const filtered = resObj.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()));
-              setFilteredRestuarants(filtered);
-            }}
-          >
-            Search
-          </button>
-        </div>
-        <button
-          className="px-4 py-2 m-4 bg-primary rounded-2xl cursor-pointer text-white"
-          onClick={() => {
-            if (toggleTopResturants === "Top Rated Restaurants") {
-              const filtered = resObj.filter((res) => res.info.avgRatingString > 4.5);
-              setToggleTopResturants("Show All Restuarants");
-              setFilteredRestuarants(filtered);
-            } else {
-              setToggleTopResturants("Top Rated Restaurants");
-              setFilteredRestuarants(resObj);
-            }
-          }}
-        >
-          {toggleTopResturants}
-        </button>
-      </div>
-      <div className="mx-auto max-w-screen-5xl flex flex-wrap justify-center gap-8">
-        {filteredRestuarants.map((restaurant) => (
-          <Link key={restaurant.info.id} to={"/restaurant/" + restaurant.info.id} className="block">
-            <RestaurantCard resData={restaurant} />
-          </Link>
-        ))}
-      </div>
+  return (
+    <div className="body">
+      <SearchControls searchText={searchText} onSearchTextChange={setSearchText} topOnly={topOnly} onToggleTopOnly={() => setTopOnly((v) => !v)} />
+
+      <RestaurantGrid restaurants={filtered} />
+
+      <div ref={sentinelRef} className="h-8" />
+      {loadingMore && <div className="py-4 text-center text-sm opacity-60">Loading more…</div>}
+      {!hasMore && <div className="py-4 text-center text-xs opacity-50">You’re all caught up.</div>}
     </div>
   );
-};
-
-export default Body;
+}

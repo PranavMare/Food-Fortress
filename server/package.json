@@ -1,0 +1,14 @@
+{
+  "name": "food-fortress-api",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "nodemon server.mjs" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "fetch-cookie": "^3.0.1",
+    "node-fetch": "^3.3.2",
+    "tough-cookie": "^4.1.4"
+  },
+  "devDependencies": { "nodemon": "^3.0.0" }
+}
