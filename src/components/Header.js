@@ -15,7 +15,7 @@ const Header = () => {
         <img className="w-25" src={logo} alt="Foodress logo" />
       </div>
       <div className="flex place-items-center">
-        <ul className="flex p-4 m-4 bg-primary rounded-2xl text-white">
+        <ul className="flex p-4 m-4 bg-primary rounded-2xl text-white ">
           <li className="px-4">{onlineStatus ? "🟢" : "🔴"}</li>
           <li className="px-4">
             <Link to="/">Home</Link>

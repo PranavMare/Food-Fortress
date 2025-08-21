@@ -20,7 +20,7 @@ export default function Body() {
 
   const filtered = useMemo(() => {
     let list = restaurants;
-    if (topOnly) list = list.filter((r) => Number(r?.info?.avgRatingString) > 4.5);
+    if (topOnly) list = list.filter((r) => Number(r?.info?.avgRatingString) > 4.2);
     if (searchText.trim()) {
       const q = searchText.toLowerCase();
       list = list.filter((r) => r?.info?.name?.toLowerCase().includes(q));
@@ -50,7 +50,11 @@ export default function Body() {
       <RestaurantGrid restaurants={filtered} />
 
       <div ref={sentinelRef} className="h-8" />
-      {loadingMore && <div className="py-4 text-center text-sm opacity-60">Loading more…</div>}
+      {loadingMore && (
+        <div className="py-4 text-center text-sm opacity-60">
+          <Shimmer />
+        </div>
+      )}
       {!hasMore && <div className="py-4 text-center text-xs opacity-50">You’re all caught up.</div>}
     </div>
   );
