@@ -3,17 +3,21 @@ import "./index.css";
 import Header from "./components/Header";
 import Body from "./components/Body";
 import About from "./components/About";
+import Cart from "./components/Cart";
 import Contact from "./components/Contact";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import RestaurantMenu from "./components/RestaurantMenu";
-import AboutFunctional from "./components/AboutFunctional";
+import { Provider } from "react-redux";
+import appStore from "./utils/store/appStore";
 
 const AppLayout = () => {
   return (
-    <div className="app">
-      <Header />
-      <Outlet />
-    </div>
+    <Provider store={appStore}>
+      <div className="app">
+        <Header />
+        <Outlet />
+      </div>
+    </Provider>
   );
 };
 
@@ -33,6 +37,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       },
       {
         path: "/restaurant/:resId",

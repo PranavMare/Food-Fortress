@@ -1,4 +1,6 @@
+import { useDispatch } from "react-redux";
 import { CDN_URL } from "../utils/constants";
+import { addItem } from "../utils/features/cartSlice";
 
 const formatINR = (paisa = 0) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format((paisa ?? 0) / 100);
 
@@ -9,6 +11,13 @@ function ItemsList({ items = [] }) {
         const info = item?.card?.info ?? {};
         const price = info.defaultPrice ?? info.price ?? 0;
         const imgId = info.imageId ?? info.cloudinaryImageId;
+
+        const dispatch = useDispatch();
+
+        const handleAddItems = () => {
+          //Dispatch an action
+          dispatch(addItem(item));
+        };
 
         return (
           <div key={info.id ?? info.name} className="flex items-start gap-4 py-4">
@@ -33,6 +42,7 @@ function ItemsList({ items = [] }) {
               <button
                 type="button"
                 className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 text-sm  font-bold rounded-full bg-secondary text-primary ring-1 ring-gray-200 shadow hover:bg-primary hover:scale-120 hover:text-secondary"
+                onClick={() => handleAddItems(item)}
               >
                 Add
               </button>
