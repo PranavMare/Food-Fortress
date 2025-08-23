@@ -1,123 +1,4 @@
 import React, { useState } from "react";
-import Header from "./Header";
-
-const styles = {
-  page: {
-    fontFamily: 'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
-    background: "#f9f9fb",
-    color: "#1f2d3a",
-    lineHeight: 1.55,
-    padding: "0 1rem",
-    maxWidth: 1000,
-    margin: "0 auto",
-  },
-  section: {
-    marginTop: "2rem",
-    display: "grid",
-    gap: "2rem",
-    gridTemplateColumns: "1fr 1fr",
-  },
-  infoCard: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: "1.5rem",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  formCard: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: "1.5rem",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-  },
-  heading: {
-    marginTop: 0,
-    fontSize: "clamp(1.75rem,2.2vw,2.5rem)",
-  },
-  subtext: {
-    margin: "0.5rem 0 1rem",
-    color: "#555",
-    fontSize: "1rem",
-  },
-  input: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-    fontSize: "1rem",
-    marginBottom: "1rem",
-    outline: "none",
-  },
-  textarea: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-    fontSize: "1rem",
-    minHeight: 140,
-    resize: "vertical",
-    marginBottom: "1rem",
-    outline: "none",
-  },
-  button: {
-    background: "#ff6b35",
-    color: "#fff",
-    padding: "12px 24px",
-    border: "none",
-    borderRadius: 8,
-    cursor: "pointer",
-    fontWeight: 600,
-    fontSize: "1rem",
-  },
-  small: {
-    fontSize: "0.85rem",
-    color: "#666",
-    marginTop: "0.25rem",
-  },
-  socialRow: {
-    display: "flex",
-    gap: "0.75rem",
-    marginTop: "0.5rem",
-  },
-  socialLink: {
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#eee",
-    width: 32,
-    height: 32,
-    borderRadius: "50%",
-    fontSize: "0.9rem",
-    color: "#444",
-  },
-  mapPlaceholder: {
-    background: "#e8e8f0",
-    borderRadius: 10,
-    height: "220px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#888",
-    fontSize: "0.9rem",
-    marginTop: "1rem",
-  },
-  error: {
-    color: "#c0392b",
-    fontSize: "0.85rem",
-    marginBottom: "0.5rem",
-  },
-  fullWidth: {
-    gridColumn: "1 / -1",
-  },
-  "@media (max-width: 900px)": {
-    section: {
-      gridTemplateColumns: "1fr",
-    },
-  },
-};
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -137,9 +18,7 @@ const Contact = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (touched[name]) {
-      setErrors(validate({ ...form, [name]: value }));
-    }
+    if (touched[name]) setErrors(validate({ ...form, [name]: value }));
   };
 
   const handleBlur = (e) => {
@@ -153,134 +32,182 @@ const Contact = () => {
     const v = validate(form);
     setErrors(v);
     setTouched({ name: true, email: true, message: true });
-    if (Object.keys(v).length === 0) {
-      // placeholder for real submission logic (e.g., API call)
-      setSubmitted(true);
-    }
+    if (Object.keys(v).length === 0) setSubmitted(true);
   };
 
+  const inputBase = "block w-full rounded-lg border bg-white px-3 py-2 text-base outline-none transition placeholder:text-slate-400";
+  const okFocus = "focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 border-slate-300";
+  const errFocus = "border-red-500 focus:ring-2 focus:ring-red-500/20";
+
   return (
-    <div style={styles.page}>
-      <div style={{ paddingTop: "1rem" }}>
-        <h1 style={styles.heading}>Contact FoodFortress</h1>
-        <p style={styles.subtext}>Have a question, feedback, or need support? We’re here to help.</p>
-      </div>
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <header className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Contact Food Fortress</h1>
+          <p className="mt-2 text-slate-600">Have a question, feedback, or need support? We’re here to help.</p>
+        </header>
 
-      <div style={styles.section}>
-        <div style={styles.infoCard}>
-          <div>
-            <h2>Get in touch</h2>
-            <p style={{ marginTop: 4 }}>Email us directly or send a message using the form. Our support team typically responds within 1 business day.</p>
-            <div style={{ marginTop: "1rem" }}>
-              <p>
-                <strong>Support Email:</strong> <a href="mailto:support@foodfortress.com">support@foodfortress.com</a>
-              </p>
-              <p>
-                <strong>Phone:</strong> (555) 123-4567
-              </p>
-              <p>
-                <strong>Address:</strong> 123 Fortress Lane, Cityville, USA
-              </p>
-            </div>
-          </div>
-          <div>
-            <div style={styles.socialRow}>
-              <a aria-label="Twitter" href="#" style={styles.socialLink}>
-                T
-              </a>
-              <a aria-label="Instagram" href="#" style={styles.socialLink}>
-                I
-              </a>
-              <a aria-label="Facebook" href="#" style={styles.socialLink}>
-                F
-              </a>
-            </div>
-            <div style={styles.mapPlaceholder} aria-label="Map placeholder">
-              Map would go here
-            </div>
-          </div>
-        </div>
-
-        <div style={styles.formCard}>
-          <h2>Send us a message</h2>
-          {submitted ? (
+        <section className="grid gap-6 md:grid-cols-2">
+          {/* Info card */}
+          <aside className="flex flex-col justify-between rounded-2xl bg-white p-6 shadow-lg shadow-slate-900/5">
             <div>
-              <p>
-                Thank you, <strong>{form.name}</strong>. Your message has been received. We’ll reply to <strong>{form.email}</strong> shortly.
+              <h2 className="text-xl font-semibold">Get in touch</h2>
+              <p className="mt-1.5 text-slate-600">
+                Email us directly or send a message using the form. Our support team typically responds within 1 business day.
               </p>
+
+              <dl className="mt-4 space-y-2 text-slate-700">
+                <div className="flex gap-2">
+                  <dt className="font-semibold w-32">Support Email:</dt>
+                  <dd>
+                    <a href="mailto:support@foodfortress.com" className="text-orange-600 hover:text-orange-700 underline underline-offset-2">
+                      support@foodfortress.com
+                    </a>
+                  </dd>
+                </div>
+                <div className="flex gap-2">
+                  <dt className="font-semibold w-32">Phone:</dt>
+                  <dd>(555) 123-4567</dd>
+                </div>
+                <div className="flex gap-2">
+                  <dt className="font-semibold w-32">Address:</dt>
+                  <dd>123 Fortress Lane, Cityville, USA</dd>
+                </div>
+              </dl>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate>
-              <div>
-                <label htmlFor="name">Name</label>
-                <input
-                  aria-required="true"
-                  aria-invalid={errors.name ? "true" : "false"}
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Your name"
-                  style={styles.input}
-                  value={form.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {touched.name && errors.name && (
-                  <div role="alert" style={styles.error}>
-                    {errors.name}
-                  </div>
-                )}
+
+            <div>
+              <div className="mt-4 flex gap-2">
+                <a
+                  aria-label="Twitter"
+                  href="#"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+                >
+                  T
+                </a>
+                <a
+                  aria-label="Instagram"
+                  href="#"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+                >
+                  I
+                </a>
+                <a
+                  aria-label="Facebook"
+                  href="#"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+                >
+                  F
+                </a>
               </div>
 
-              <div>
-                <label htmlFor="email">Email</label>
-                <input
-                  aria-required="true"
-                  aria-invalid={errors.email ? "true" : "false"}
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  style={styles.input}
-                  value={form.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {touched.email && errors.email && (
-                  <div role="alert" style={styles.error}>
-                    {errors.email}
-                  </div>
-                )}
+              <div aria-label="Map placeholder" className="mt-4 grid h-56 place-items-center rounded-lg bg-slate-100 text-sm text-slate-500">
+                Map would go here
               </div>
+            </div>
+          </aside>
 
-              <div>
-                <label htmlFor="message">Message</label>
-                <textarea
-                  aria-required="true"
-                  aria-invalid={errors.message ? "true" : "false"}
-                  id="message"
-                  name="message"
-                  placeholder="How can we help?"
-                  style={styles.textarea}
-                  value={form.message}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {touched.message && errors.message && (
-                  <div role="alert" style={styles.error}>
-                    {errors.message}
-                  </div>
-                )}
+          {/* Form card */}
+          <div className="rounded-2xl bg-white p-6 shadow-lg shadow-slate-900/5">
+            <h2 className="text-xl font-semibold">Send us a message</h2>
+
+            {submitted ? (
+              <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
+                <p>
+                  Thank you, <strong>{form.name}</strong>. Your message has been received. We’ll reply to <strong>{form.email}</strong> shortly.
+                </p>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
+                {/* Name */}
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+                    Name
+                  </label>
+                  <input
+                    aria-required="true"
+                    aria-invalid={errors.name ? "true" : "false"}
+                    aria-describedby={errors.name ? "name-error" : undefined}
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Your name"
+                    className={`${inputBase} ${errors.name && touched.name ? errFocus : okFocus}`}
+                    value={form.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.name && errors.name && (
+                    <p id="name-error" role="alert" className="mt-1 text-sm text-red-600">
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
 
-              <button type="submit" style={styles.button}>
-                Send Message
-              </button>
-              <div style={styles.small}>By submitting, you agree to receive a response from FoodFortress support.</div>
-            </form>
-          )}
-        </div>
-      </div>
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                    Email
+                  </label>
+                  <input
+                    aria-required="true"
+                    aria-invalid={errors.email ? "true" : "false"}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className={`${inputBase} ${errors.email && touched.email ? errFocus : okFocus}`}
+                    value={form.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.email && errors.email && (
+                    <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-slate-700">
+                    Message
+                  </label>
+                  <textarea
+                    aria-required="true"
+                    aria-invalid={errors.message ? "true" : "false"}
+                    aria-describedby={errors.message ? "message-error" : undefined}
+                    id="message"
+                    name="message"
+                    placeholder="How can we help?"
+                    className={`${inputBase} min-h-36 resize-y ${errors.message && touched.message ? errFocus : okFocus}`}
+                    value={form.message}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.message && errors.message && (
+                    <p id="message-error" role="alert" className="mt-1 text-sm text-red-600">
+                      {errors.message}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 active:scale-[.99]"
+                >
+                  Send Message
+                </button>
+
+                <p className="text-sm text-slate-500">By submitting, you agree to receive a response from FoodFortress support.</p>
+              </form>
+            )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
