@@ -1,112 +1,185 @@
-# Food Fortress
+# Food Fortress — Food Delivery Web App 🍽️
 
-> A React + Tailwind learning project for browsing nearby restaurants with search and infinite scrolling, backed by a tiny Express API that proxies a third‑party listings service to avoid CORS and handle the pagination tokens.
+**Food Fortress** is a modern single‑page web application for **discovering restaurants** and managing a simple **order/cart** flow.  
+The UI is built with **React** and bundled by **Parcel**. A lightweight **serverless API** (under `/api/*`) proxies upstream data sources and handles cookies/CSRF automatically.
 
-## About
+---
 
-Food Fortress is a two‑part app:
+## Overview
 
-- **Web UI (React + Parcel + Tailwind CSS):** renders the restaurant list, search/filter, and an infinite‑scroll feed with lightweight components (e.g., `RestaurantCard`, `RestaurantMenu`). It uses **React Router** for pages like Home, About, Contact, and individual menus.
-- **API (Express):** a small helper service that calls the upstream listings API on your behalf. This keeps credentials/headers server‑side, mitigates CORS, and simplifies pagination by exposing two endpoints:
-  - `GET /api/swiggy/list?lat=<lat>&lng=<lng>` – initial page
-  - `POST /api/swiggy/update` – fetch next pages using pagination tokens
+- **What it is:** A food‑delivery style web client that lists nearby restaurants for given coordinates and lets users explore menus and build a cart.
+- **Why it exists:** To provide a clean, fast, and portable front‑end with a minimal backend layer that works in local development without exposing upstream cookies or complex auth.
+- **How it works:** The React SPA renders routes and components. Data requests go to local `/api/*` serverless functions which in turn call upstream endpoints (with session warm‑up and CSRF headers), returning JSON back to the client.
 
-## Features
-
-- ⚡️ **Fast dev** with Parcel (no complex config)
-- 🎯 **Restaurant discovery** with search and filters
-- 🔁 **Infinite scroll** (IntersectionObserver based)
-- 💅 **Tailwind CSS v4** utility styles with custom theme tokens
-- 🔗 **React Router** for page navigation
-- 🌐 **Proxy API** (Express) to normalize headers and paginate reliably
+---
 
 ## Tech Stack
 
-- **Frontend:** React, React Router, Parcel, Tailwind CSS
-- **Backend:** Node.js, Express, node-fetch (+ cookie jar for session/csrf)
-- **Dev tooling:** concurrently, nodemon
+- **React** (SPA UI)
+- **Parcel** (dev server + production builds)
+- **Serverless functions** (Node 18, CommonJS) under `api/`
+- **fetch-cookie** + **tough-cookie** (session + CSRF handling)
+- Optional state management: simple component state or Redux Toolkit (depending on your codebase)
+
+---
+
+## Features
+
+- 🔎 **Restaurant discovery** by latitude/longitude
+- 🛒 **Cart flow**: add/remove items, subtotal display (implementation in client code)
+- 🔀 **Client‑side routing** (single‑page application with deep-link support)
+- 🌐 **API proxy**: `/api/swiggy/*` functions warm up cookies and attach CSRF headers automatically
+- 🧪 **Typed JSON payloads** for simple parsing on the client
+- 🧰 **Fast DX**: zero‑config dev server (`parcel`), single command to run app + API locally
+
+---
 
 ## Project Structure
 
-```text
-.
-├─ README.md
-├─ package.json  # root scripts
-├─ public/
-├─ server/  # Express API (proxy/pagination)
-└─ src/  # React app (components, hooks, styles)
+```
+repo-root/
+├─ api/                      # Serverless API (Node 18, CommonJS)
+│  ├─ _utils/
+│  │  └─ cookies.js          # fetch-cookie + tough-cookie helper
+│  └─ swiggy/
+│     ├─ list.js             # GET: restaurants list for lat/lng
+│     └─ update.js           # POST: list update (accepts lat/lng; CSRF-aware)
+├─ src/                      # React client
+│  ├─ index.html
+│  ├─ main.jsx / index.jsx   # app entry
+│  └─ utils/
+│     └─ useRestaurants.js   # data-fetching hook using /api/swiggy/*
+├─ package.json              # scripts (parcel dev/build/preview)
+├─ vercel.json               # SPA rewrites + function runtime (also used locally)
+└─ README.md
 ```
 
-## Getting Started
+**Folder notes**
 
-### Prerequisites
+- `api/_utils/cookies.js`: creates a cookie-aware `fetch` and helps read CSRF‑like values from the cookie jar.
+- `api/swiggy/list.js`: reads `lat` & `lng` from the query string and forwards the request upstream, returning JSON.
+- `api/swiggy/update.js`: accepts `lat`/`lng` **from body or query**, warms up cookies, sends the POST with CSRF headers, and retries once on 403.
+- `src/utils/useRestaurants.js`: example hook demonstrating cancellable fetches and basic loading/error handling.
 
-- Node.js 18+
-- (Optional) A terminal that supports running multiple scripts
+---
+
+## Run Locally
+
+> Requires **Node 18+** and **npm**. (The API functions run locally together with the app.)
 
 ### Install
 
 ```bash
-# from the project root
-npm install
-cd server && npm install && cd ..
+npm ci
 ```
 
-### Run
+### Start (app + API together)
 
 ```bash
-# Frontend only (Parcel dev server)
-npm run dev:web
-
-# API only (Express on http://localhost:3001)
-npm run dev:api
-
-# Both at once (concurrently)
-npm run dev:all
+vercel dev
+# App + API available at http://localhost:3000
 ```
 
-- UI dev server: usually `http://localhost:1234`
-- API server: `http://localhost:3001` (default; override with `PORT`)
+- The SPA and `/api/*` share the **same origin** locally, so no extra CORS setup is needed.
+- If you prefer only the Parcel dev server: `npm run dev` (then call the API at `http://localhost:3000/api/...` from another `vercel dev` terminal).
 
-### Environment Variables
+### Local production preview (optional)
 
-Create a `.env` file at the project root or export in your shell:
-
-```env
-PORT=3001         # API port (server)
+```bash
+npm run build
+npx serve dist
 ```
 
-> The frontend is self‑contained. Only the API needs `PORT` if you want to change it.
+### Scripts
 
-## API Quick Reference
-
-**Base:** `http://localhost:3001`
-
-- `GET /api/swiggy/list?lat=<lat>&lng=<lng>`  
-  Returns the first page of restaurants for the given location.
-- `POST /api/swiggy/update` (JSON body)  
-  Use this to load **more** results (pagination).
-  ```json
-  {
-    "lat": "18.5220938",
-    "lng": "73.8412187",
-    "widgetOffset": { "collectionV5RestaurantListWidget_SimRestoRelevance_food_seo": 9 },
-    "pageOffset": "...optional token from previous response...",
-    "nextOffset": "...optional token from previous response..."
+```jsonc
+{
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html --dist-dir dist --public-url /",
+    "preview": "npx serve dist"
   }
-  ```
-  The API manages session & CSRF under the hood and merges your offsets.
+}
+```
 
-## Scripts
+---
 
-- `npm run dev:web` – start Parcel on the React app
-- `npm run dev:api` – start the Express API with nodemon
-- `npm run dev:all` – run both together
-- `npm run build` – build static assets with Parcel
-- `npm start` – alias of `parcel src/index.html` (dev)
+## API (Serverless)
 
-## Troubleshooting
+All endpoints are served under the **same origin** in local development (e.g., `http://localhost:3000`).
 
-- **CORS or 403 from upstream** → run the API locally and point the web app at it (the API already sets realistic headers).
-- **Infinite scroll not loading** → ensure the `POST /api/swiggy/update` request includes the latest pagination token(s) returned by the previous response.
-- **Tailwind styles missing** → confirm Tailwind v4 is installed and `@import "tailwindcss";` exists in `src/index.css`.
+### `GET /api/swiggy/list?lat=<num>&lng=<num>`
+
+Returns a JSON list of restaurants for the provided coordinates.
+
+**Query params**
+
+- `lat` _(number, required)_
+- `lng` _(number, required)_
+
+**Example**
+
+```bash
+curl "http://localhost:3000/api/swiggy/list?lat=18.5220938&lng=73.8412187"
+```
+
+**Response (shape varies; sample)**
+
+```json
+{
+  "statusCode": 0,
+  "data": {
+    "cards": [
+      /* ... */
+    ]
+  }
+}
+```
+
+---
+
+### `POST /api/swiggy/update`
+
+Refreshes/updates the list for a location. Accepts coordinates from **body or query**.
+
+**Body JSON (recommended)**
+
+```json
+{
+  "lat": 18.5220938,
+  "lng": 73.8412187,
+  "page_type": "DESKTOP_WEB_LISTING"
+}
+```
+
+**Query form (alternative)**
+
+```
+/api/swiggy/update?lat=18.5220938&lng=73.8412187
+```
+
+**Examples**
+
+```bash
+# Body
+curl -i -X POST http://localhost:3000/api/swiggy/update   -H "content-type: application/json"   -d '{"lat":18.5220938,"lng":73.8412187,"page_type":"DESKTOP_WEB_LISTING"}'
+
+# Query
+curl -i -X POST "http://localhost:3000/api/swiggy/update?lat=18.5220938&lng=73.8412187"   -H "content-type: application/json" -d "{}"
+```
+
+**Notes**
+
+- Functions perform a brief session warm‑up and attach CSRF headers automatically.
+- On a 403 response from upstream, the function retries once with a fresh token.
+- If `lat`/`lng` are missing, the function returns HTTP `400` with a clear message.
+
+---
+
+## UI Flow (at a glance)
+
+1. User opens the app (SPA mounts and sets up routes).
+2. Client requests `/api/swiggy/list?lat=<...>&lng=<...>` to fetch restaurants for the current location.
+3. User can refine or refresh results; client calls `POST /api/swiggy/update` with the same coordinates.
+4. User adds items to the cart; the UI maintains client‑side state for totals and item counts.
+5. (Optional) Additional features like search, filters, and pagination can be layered onto the same flow.
