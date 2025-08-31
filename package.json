@@ -6,12 +6,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "jest",
-    "start": "parcel src/index.html",
-    "build": "parcel build index.html",
-    "dev:web": "parcel src/index.html",
-    "dev:api": "nodemon server/server.mjs",
-    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:api\""
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html --dist-dir dist --public-url /",
+    "preview": "npx serve dist"
   },
   "keywords": [],
   "author": "",

@@ -18,7 +18,7 @@ const hasAnyOffset = (wo) => !!wo && Object.values(wo).some((v) => Boolean(v) &&
 
 const WKEY = "collectionV5RestaurantListWidget_SimRestoRelevance_food_seo";
 const bumpWidgetOffset = (prev) => {
-  const cur = Number((prev && prev[WKEY]) ?? 9); 
+  const cur = Number((prev && prev[WKEY]) ?? 9);
   const next = String(cur + 15);
   return { ...(prev || {}), [WKEY]: next };
 };
@@ -41,7 +41,8 @@ export default function useRestaurants({ lat, lng }) {
         setHasMore(true);
         setLoadingMore(false);
 
-        const r = await fetch(`http://localhost:3001/api/swiggy/list?lat=${lat}&lng=${lng}`);
+        const r = await fetch(`/api/swiggy/list?lat=${lat}&lng=${lng}`);
+        if (!r.ok) throw new Error(`API ${r.status}`);
         const json = await r.json();
         if (cancelled) return;
 
@@ -69,7 +70,7 @@ export default function useRestaurants({ lat, lng }) {
     const prevWO = widgetOffset;
     setLoadingMore(true);
     try {
-      const resp = await fetch("http://localhost:3001/api/swiggy/update", {
+      const resp = await fetch("/api/swiggy/update", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
