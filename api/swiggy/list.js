@@ -1,18 +1,16 @@
-// /api/swiggy/list.js 
 const { makeCookieFetch, getCookieValue } = require("../_utils/cookies.js");
 
 module.exports = async function handler(req, res) {
   try {
-
-  // CORS (helps during local dev with Parcel at localhost:1234)
-  const ORIGIN = process.env.CORS_ORIGIN || "*";
-  if (req.method === "OPTIONS") {
+    // CORS (helps during local dev with Parcel at localhost:1234)
+    const ORIGIN = process.env.CORS_ORIGIN || "*";
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", ORIGIN);
+      res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "content-type");
+      return res.status(204).end();
+    }
     res.setHeader("Access-Control-Allow-Origin", ORIGIN);
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "content-type");
-    return res.status(204).end();
-  }
-  res.setHeader("Access-Control-Allow-Origin", ORIGIN);
 
     const url = new URL(req.url, "http://localhost");
     const lat = url.searchParams.get("lat") || "18.5220938";
@@ -49,5 +47,4 @@ module.exports = async function handler(req, res) {
   }
 };
 
-const UA =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139 Safari/537.36";
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139 Safari/537.36";

@@ -1,4 +1,3 @@
-// api/swiggy/update.js — accepts lat/lng from body OR query; robust body parsing; CSRF warmup+retry
 const { makeCookieFetch, getCookieValue } = require("../_utils/cookies.js");
 
 module.exports = async function handler(req, res) {

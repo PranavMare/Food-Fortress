@@ -1,29 +1,30 @@
-import { useState } from "react";
 import ItemsList from "./ItemsList";
 
 const RestaurantCategory = ({ data, showItems, setShowCategory }) => {
-  const handleClick = () => {
-    setShowCategory();
-  };
+  const count = data?.itemCards?.length ?? 0;
 
   return (
-    <div className="">
+    <div className="mx-auto my-3 w-full md:w-9/12">
       {/* Header */}
-      <div className="w-6/12 mx-auto my-2 bg-gray shadow-lg p-4 cursor-pointer" onClick={handleClick}>
-        <div className="flex justify-between">
+      <div className="bg-white ring-secondary rounded-sm shadow-xl p-4 cursor-pointer transition hover:shadow-md" onClick={setShowCategory}>
+        <div className="flex items-center justify-between">
           <span className="font-semibold text-lg">
-            {data.title} ({data.itemCards.length})
+            {data.title} {count ? `(${count})` : ""}
           </span>
-          <span>
-            <button className="inline-flex items-center gap-1 text-gray-700">
-              <svg viewBox="0 0 24 24" className="w-6 h-6 stroke-current">
-                <path d="M6 9l6 6 6-6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </span>
+          <button className="inline-flex items-center text-gray-700" aria-label={showItems ? "Collapse" : "Expand"}>
+            <svg viewBox="0 0 24 24" className={`w-6 h-6 stroke-current transition-transform ${showItems ? "rotate-180" : ""}`}>
+              <path d="M6 9l6 6 6-6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
-        {showItems && <ItemsList items={data.itemCards} />}
       </div>
+
+      {/* Body */}
+      {showItems && (
+        <div className=" rounded-b-xl px-4 pb-4 pt-1">
+          <ItemsList items={data.itemCards} />
+        </div>
+      )}
     </div>
   );
 };
